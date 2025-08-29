@@ -1,0 +1,91 @@
+/* Night theme variables */
+:root {
+  --bg: #0f1216;
+  --bg-soft: #151a21;
+  --card: rgba(255,255,255,0.06);
+  --card-soft: rgba(255,255,255,0.08);
+  --text: #e7e9ee;
+  --muted: #9aa3ad;
+  --accent: #4f8cff;  /* electric blue */
+  --accent-2: #00d3a7; /* mint */
+}
+
+html, body {
+  background: radial-gradient(1200px 800px at 20% -10%, #1a2030 0%, var(--bg) 60%),
+              radial-gradient(1200px 800px at 80% -10%, #16202b 0%, var(--bg) 60%);
+  color: var(--text);
+}
+
+/* spacing for fixed-top navbar */
+.pt-6 { padding-top: 5.5rem; }
+
+/* Navbar */
+.glassy {
+  background: var(--card);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.glassy-soft { background: var(--card-soft); }
+
+.navbar .nav-link { color: #cbd3dc; }
+.navbar .nav-link:hover { color: white; }
+
+/* Brand */
+.brand-logo { width: 28px; height: 28px; object-fit: contain; border-radius: 6px; }
+.brand-row { gap: .5rem; }
+.brand-icon { font-size: 1.4rem; opacity: .85; transform: translateY(-1px); }
+.brand-title { font-weight: 700; }
+
+/* Hero */
+.hero {
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0));
+}
+.hero .badge.bg-gradient {
+  background: linear-gradient(90deg, var(--accent) 0%, var(--accent-2) 100%);
+  border: 0;
+}
+.hero-gif {
+  position: absolute;
+  top: -10px;
+  width: 120px;
+  opacity: .25;
+  filter: saturate(1.2);
+}
+.hero-gif.left { left: 0; transform: scaleX(-1); }
+.hero-gif.right { right: 0; }
+
+/* Cards */
+.card { border-radius: 16px; overflow: hidden; }
+.card.glassy { background: var(--card); border: 1px solid rgba(255,255,255,0.08); }
+.card .card-header { border-bottom: 1px solid rgba(255,255,255,0.06); }
+
+/* Controls (dark) */
+.form-control-dark, .form-select-dark {
+  color: var(--text);
+  background: var(--bg-soft);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.form-control-dark::placeholder { color: #818892; }
+.form-select-dark { background-image: none; }
+
+/* Mono textarea */
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+
+/* Buttons */
+.btn-accent {
+  color: #fff;
+  background: linear-gradient(90deg, var(--accent) 0%, var(--accent-2) 100%);
+  border: 0;
+  box-shadow: 0 6px 20px rgba(0,211,167,0.18);
+}
+.btn-accent:hover { filter: brightness(1.05); }
+
+.btn-outline-light { border-color: rgba(255,255,255,0.25); }
+
+/* Subtle text */
+.text-secondary { color: #c2c8d0 !important; }
+.text-muted { color: var(--muted) !important; }
+
+/* Icons */
+.bi { vertical-align: -0.12em; }
+.icon-sm { font-size: 1.05rem; }
