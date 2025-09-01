@@ -1,283 +1,173 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Rixz – SRT Subtitle Maker</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SubtitleGen</title>
+  <style>
+    /* Reset & Base */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', sans-serif; color: #fff; background: #0f0f0f; line-height: 1.6; }
 
-  <!-- Bootstrap 5 -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Icons -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-  <!-- Custom -->
-  <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+    /* Navbar */
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 1rem 5%; background: #111; position: sticky; top: 0; z-index: 1000; }
+    nav .logo { font-size: 1.5rem; font-weight: bold; color: #8b5cf6; }
+    nav ul { display: flex; gap: 2rem; list-style: none; }
+    nav ul li a { text-decoration: none; color: #fff; font-weight: 500; transition: color 0.3s; }
+    nav ul li a:hover { color: #8b5cf6; }
+
+    /* Hero */
+    #hero { 
+      height: 90vh; 
+      display: flex; 
+      flex-direction: column; 
+      justify-content: center; 
+      align-items: center;
+      background: url('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+      text-align: center; 
+      padding: 2rem; 
+      position: relative;
+      transition: background-image 1s ease-in-out;
+    }
+    #hero::after { content: ""; position: absolute; inset: 0; background: rgba(0,0,0,0.6); }
+    #hero h1, #hero p, #hero a { position: relative; z-index: 1; }
+    #hero h1 { font-size: 3rem; margin-bottom: 1rem; }
+    #hero p { font-size: 1.2rem; margin-bottom: 2rem; }
+    #hero a { background: linear-gradient(90deg, #8b5cf6, #06b6d4); padding: 0.8rem 2rem; border-radius: 30px; text-decoration: none; color: #fff; font-weight: bold; transition: transform 0.3s; }
+    #hero a:hover { transform: scale(1.05); }
+
+    /* Features */
+    #features { padding: 4rem 8%; background: #18181b; text-align: center; }
+    #features h2 { font-size: 2rem; margin-bottom: 2rem; }
+    .feature-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; }
+    .card { background: #27272a; padding: 2rem; border-radius: 1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.4); transition: transform 0.3s, box-shadow 0.3s; }
+    .card:hover { transform: translateY(-10px); box-shadow: 0 8px 25px rgba(0,0,0,0.6); }
+    .card i { font-size: 3rem; margin-bottom: 1rem; color: #06b6d4; }
+    .card h3 { margin-bottom: 1rem; }
+
+    /* Generator Section */
+    #generator { padding: 4rem 8%; background: url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1600&q=80') center/cover fixed no-repeat; position: relative; }
+    #generator::after { content: ""; position: absolute; inset: 0; background: rgba(0,0,0,0.7); }
+    .generator-container { position: relative; z-index: 1; max-width: 800px; margin: auto; background: rgba(255,255,255,0.05); backdrop-filter: blur(8px); border-radius: 1rem; padding: 2rem; box-shadow: 0 8px 30px rgba(0,0,0,0.6); }
+    .generator-container h2 { text-align: center; margin-bottom: 1.5rem; }
+    textarea, select, input { width: 100%; padding: 0.7rem; margin: 0.5rem 0; border-radius: 8px; border: none; outline: none; }
+    textarea { min-height: 120px; resize: vertical; }
+    button { display: block; margin: auto; margin-top: 1rem; background: linear-gradient(90deg, #8b5cf6, #06b6d4); padding: 0.8rem 2rem; border: none; border-radius: 30px; font-weight: bold; color: #fff; cursor: pointer; transition: transform 0.3s; }
+    button:hover { transform: scale(1.05); }
+    pre { background:#111; color:#0f0; padding:1rem; border-radius:8px; max-height:300px; overflow:auto; }
+
+    /* About Section */
+    #about { padding: 4rem 8%; background: #111; text-align: center; }
+    #about h2 { font-size: 2rem; margin-bottom: 1rem; }
+    #about p { max-width: 700px; margin: auto; font-size: 1.1rem; color: #d1d5db; }
+
+    /* Footer */
+    footer { padding: 2rem; background: #0a0a0a; text-align: center; font-size: 0.9rem; color: #aaa; }
+
+    /* Animations */
+    .fade-in { opacity: 0; transform: translateY(30px); transition: all 0.8s ease-out; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+  </style>
 </head>
-<body class="bg-dark text-light">
-
-  <!-- NAVBAR -->
-  <nav class="navbar navbar-expand-lg navbar-dark glassy fixed-top">
-    <div class="container">
-      <a class="navbar-brand d-flex align-items-center" href="#home">
-        <img src="{{ url_for('static', filename='logo.png') }}" alt="Rixz" class="brand-logo me-2">
-        <span>Rixz</span>
-      </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div id="nav" class="collapse navbar-collapse">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
-          <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
-          <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
-        </ul>
-      </div>
-    </div>
+<body>
+  <!-- Navbar -->
+  <nav>
+    <div class="logo">🎬 SubtitleGen</div>
+    <ul>
+      <li><a href="#hero">Home</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#generator">Generator</a></li>
+      <li><a href="#about">About</a></li>
+    </ul>
   </nav>
 
-  <!-- HEADER / HERO -->
-  <header id="home" class="hero pt-6 pb-4">
-    <div class="container text-center position-relative">
-      <!-- decorative 4k-style gif accents (swap with your favorites) -->
-      <img class="hero-gif left" src="https://i.imgur.com/3fJ1d7y.gif" alt="">
-      <img class="hero-gif right" src="https://i.imgur.com/3fJ1d7y.gif" alt="">
+  <!-- Hero -->
+  <section id="hero" class="fade-in">
+    <h1>Generate Subtitles Instantly</h1>
+    <p>Boost your content reach with engaging and accurate subtitles for every platform.</p>
+    <a href="#generator">Try Now</a>
+  </section>
 
-      <div class="d-flex flex-column align-items-center">
-        <div class="d-flex align-items-center brand-row text-secondary">
-          <i class="bi bi-type brand-icon"></i>
-          <h1 class="h2 mb-0 brand-title text-secondary">SRT Subtitle Maker</h1>
-        </div>
-        <p class="lead mb-2 mt-2 text-secondary">Turn your scripts into professional <b>.srt</b> subtitles with timestamps.</p>
-        <span class="badge bg-gradient px-3 py-2">🔥 Designed by <b>Rixz</b></span>
-      </div>
+  <!-- Features -->
+  <section id="features" class="fade-in">
+    <h2>Where Can You Use It?</h2>
+    <div class="feature-cards">
+      <div class="card"><i>▶️</i><h3>YouTube</h3><p>Boost reach with subtitles that improve engagement and accessibility.</p></div>
+      <div class="card"><i>📸</i><h3>Instagram</h3><p>Make reels more engaging with captions that keep viewers hooked.</p></div>
+      <div class="card"><i>📘</i><h3>Facebook</h3><p>Reach a wider audience with subtitles optimized for social media videos.</p></div>
     </div>
-  </header>
+  </section>
 
-  <main class="container my-5">
+  <!-- Generator -->
+  <section id="generator" class="fade-in">
+    <div class="generator-container">
+      <h2>Generate Your Subtitles</h2>
+      <form action="/generate" method="POST">
+        <textarea name="script" placeholder="Paste your script...">{{ script or "" }}</textarea>
+        <select name="split_mode">
+          <option value="auto" {% if split_mode=="auto" %}selected{% endif %}>Auto</option>
+          <option value="newlines" {% if split_mode=="newlines" %}selected{% endif %}>Sentence</option>
+          <option value="word" {% if split_mode=="word" %}selected{% endif %}>Word</option>
+        </select>
+        <input type="number" name="duration" placeholder="Duration (sec)" value="{{ duration or 2.5 }}">
+        <input type="number" name="gap" placeholder="Gap (ms)" value="{{ gap or 200 }}">
+        <input type="number" name="start" placeholder="Start (ms)" value="{{ start or 0 }}">
+        <input type="text" name="filename" placeholder="File Name" value="{{ filename or 'subtitles.srt' }}">
+        <button type="submit">Generate</button>
+      </form>
 
-    <!-- ALERTS -->
-    {% if error %}
-      <div class="alert alert-danger alert-dismissible fade show glassy-soft" role="alert">
-        <i class="bi bi-x-circle-fill me-1"></i>{{ error }}
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
-      </div>
-    {% endif %}
-    {% if success %}
-      <div class="alert alert-success alert-dismissible fade show glassy-soft" role="alert">
-        <i class="bi bi-check-circle-fill me-1"></i>{{ success }}
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
-      </div>
-    {% endif %}
+      {% if srt_text %}
+        <h3 style="margin-top:1.5rem;">Preview:</h3>
+        <pre>{{ srt_text }}</pre>
+        <form action="/download" method="POST">
+          <input type="hidden" name="srt_text" value="{{ srt_text }}">
+          <input type="hidden" name="filename" value="{{ filename }}">
+          <button type="submit">Download SRT</button>
+        </form>
+      {% endif %}
 
-    <div class="row g-4">
-      <!-- LEFT: SCRIPT INPUT -->
-      <div class="col-lg-6">
-        <div class="card glassy h-100 border-0">
-          <div class="card-header d-flex align-items-center justify-content-between glassy-soft">
-            <div class="d-flex align-items-center">
-              <i class="bi bi-pencil-square icon-sm me-2"></i>
-              <h5 class="mb-0">1) Paste Script ✍️</h5>
-            </div>
-            <span class="text-muted small">Tips: Sentences work best</span>
-          </div>
-          <div class="card-body">
-            <form action="{{ url_for('generate') }}" method="post">
-              <div class="mb-3">
-                <textarea class="form-control form-control-dark" id="script-input" name="script" rows="12" placeholder="Paste your script here…">{{ script or '' }}</textarea>
-              </div>
-
-              <div class="row g-3">
-                <div class="col-md-6 col-lg-4">
-                  <label class="form-label">Split by</label>
-                  <select class="form-select form-select-dark" name="split_mode">
-                    <option value="auto" {% if split_mode=='auto' %}selected{% endif %}>Auto</option>
-                    <option value="sentences" {% if split_mode=='sentences' %}selected{% endif %}>Sentences</option>
-                    <option value="newlines" {% if split_mode=='newlines' %}selected{% endif %}>Newlines</option>
-                  </select>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                  <label class="form-label">Duration (sec)</label>
-                  <input class="form-control form-control-dark" type="number" step="0.1" min="0.5" name="duration" value="{{ duration or 2.5 }}">
-                </div>
-                <div class="col-md-6 col-lg-4">
-                  <label class="form-label">Gap (ms)</label>
-                  <input class="form-control form-control-dark" type="number" step="50" min="0" name="gap" value="{{ gap or 200 }}">
-                </div>
-                <div class="col-md-6 col-lg-4">
-                  <label class="form-label">Start (ms)</label>
-                  <input class="form-control form-control-dark" type="number" step="100" min="0" name="start" value="{{ start or 0 }}">
-                </div>
-                <div class="col-md-6 col-lg-8">
-                  <label class="form-label">Filename</label>
-                  <input class="form-control form-control-dark" type="text" name="filename" value="{{ filename or 'subtitles.srt' }}">
-                </div>
-              </div>
-
-              <div class="d-grid gap-2 mt-4">
-                <button class="btn btn-accent btn-lg d-inline-flex align-items-center" type="submit">
-                  <i class="bi bi-magic me-2"></i><span>Generate SRT</span>
-                </button>
-                <button class="btn btn-outline-light btn-lg d-inline-flex align-items-center" type="button" onclick="clearInput()">
-                  <i class="bi bi-x-circle me-2"></i><span>Clear Input</span>
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-
-      <!-- RIGHT: PREVIEW + DOWNLOAD -->
-      <div class="col-lg-6">
-        <div class="card glassy h-100 border-0">
-          <div class="card-header d-flex align-items-center justify-content-between glassy-soft">
-            <div class="d-flex align-items-center">
-              <i class="bi bi-eye icon-sm me-2"></i>
-              <h5 class="mb-0">2) Preview & Download 👀</h5>
-            </div>
-            <button class="btn btn-outline-light btn-sm d-inline-flex align-items-center" id="btn-copy" type="button">
-              <i class="bi bi-clipboard me-1"></i><span>Copy</span>
-            </button>
-          </div>
-          <div class="card-body">
-            <form action="{{ url_for('download') }}" method="post">
-              <textarea class="form-control form-control-dark mono" rows="10" id="srt-output" name="srt_text" readonly>{{ srt_text or '' }}</textarea>
-              <input type="hidden" name="filename" value="{{ filename or 'subtitles.srt' }}">
-              <div class="d-grid gap-2 mt-3">
-                <button class="btn btn-success btn-lg d-inline-flex align-items-center" type="submit" {% if not srt_text %}disabled{% endif %}>
-                  <i class="bi bi-download me-2"></i><span>Download .srt</span>
-                </button>
-                <button class="btn btn-danger btn-lg d-inline-flex align-items-center" type="button" onclick="clearOutput()">
-                  <i class="bi bi-trash me-2"></i><span>Clear Output</span>
-                </button>
-              </div>
-            </form>
-            {% if not srt_text %}
-              <div class="text-muted small mt-3">
-                👉 Your SRT preview will appear here after you click <b>Generate</b>.
-              </div>
-            {% endif %}
-          </div>
-        </div>
-      </div>
+      {% if error %}
+        <p style="color:red;">{{ error }}</p>
+      {% endif %}
+      {% if success %}
+        <p style="color:lightgreen;">{{ success }}</p>
+      {% endif %}
     </div>
+  </section>
 
-    <!-- SERVICES -->
-    <section id="services" class="mt-5">
-      <div class="row g-4">
-        <div class="col-md-4">
-          <div class="card glassy h-100 text-center p-3">
-            <div class="display-6 mb-2">📝</div>
-            <h5>Auto Sentence Split</h5>
-            <p class="text-muted">Smartly splits your script into readable subtitles.</p>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card glassy h-100 text-center p-3">
-            <div class="display-6 mb-2">⏱️</div>
-            <h5>Timing Controls</h5>
-            <p class="text-muted">Fine-tune duration, gaps, and start offsets with ease.</p>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card glassy h-100 text-center p-3">
-            <div class="display-6 mb-2">💾</div>
-            <h5>One-Click Download</h5>
-            <p class="text-muted">Instant .srt export compatible with popular editors.</p>
-          </div>
-        </div>
-      </div>
-    </section>
+  <!-- About -->
+  <section id="about" class="fade-in">
+    <h2>About SubtitleGen</h2>
+    <p>SubtitleGen is a free subtitle generator that helps creators quickly turn scripts into SRT files. Perfect for YouTubers, Instagram reel creators, and Facebook video editors. With a clean interface and instant downloads, it makes content creation faster and more professional.</p>
+  </section>
 
-    <!-- MINI MUSIC PLAYER -->
-    <section class="mt-5">
-      <div class="card glassy border-0">
-        <div class="card-header glassy-soft d-flex align-items-center justify-content-between">
-          <h5 class="mb-0">Mini Music Player 🎧</h5>
-          <div class="d-flex align-items-center">
-            <label class="me-2">Mood:</label>
-            <select id="mood" class="form-select form-select-dark form-select-sm" style="width:auto">
-              <option value="lofi">Chill Lofi</option>
-              <option value="focus">Deep Focus</option>
-              <option value="upbeat">Upbeat Energy</option>
-            </select>
-          </div>
-        </div>
-        <div class="card-body">
-          <!-- MINI MUSIC PLAYER -->
-<section class="my-5 text-center">
-  <h5 class="mb-3">Mini Music Player 🎧</h5>
-  <div class="d-flex justify-content-center">
-    <div class="mini-player shadow" style="max-width:380px; width:100%;">
-      <iframe 
-        width="100%" 
-        height="200" 
-        src="https://www.youtube.com/embed/jfKfPfyJRdk?rel=0&modestbranding=1&controls=0" 
-        title="lofi beats"
-        frameborder="0" 
-        style="border-radius:12px;" 
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-        allowfullscreen>
-      </iframe>
-    </div>
-  </div>
-  <p class="text-muted small mt-2">Relax with lofi beats while your subtitles generate 🎶</p>
-</section>
-
-
-
-    <!-- ABOUT -->
-    <section id="about" class="mt-5">
-      <div class="card glassy border-0">
-        <div class="card-body">
-          <h5>About Rixz</h5>
-          <p class="text-muted mb-0">Rixz helps creators produce clean subtitles in seconds. Built with Flask + Bootstrap + a lot of ❤️.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- CONTACT -->
-    <section id="contact" class="mt-5">
-      <div class="card glassy border-0">
-        <div class="card-body">
-          <h5>Contact</h5>
-          <p class="text-muted mb-1">Have a feature idea or bug to report?</p>
-          <p class="mb-0">📧 <a class="link-light" href="mailto:hello@rixz.example">hello@rixz.example</a></p>
-        </div>
-      </div>
-    </section>
-
-  </main>
-
-  <footer class="text-center py-4 text-muted small">
-    <i class="bi bi-lightning-charge text-warning"></i> Built with Flask • Bootstrap • Love
+  <!-- Footer -->
+  <footer>
+    &copy; 2025 SubtitleGen. All Rights Reserved.
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Scroll Animation -->
   <script>
-    // Copy button
-    document.getElementById('btn-copy')?.addEventListener('click', async (e) => {
-      const ta = document.getElementById('srt-output');
-      if (!ta || !ta.value.trim()) return;
-      await navigator.clipboard.writeText(ta.value);
-      const btn = e.target.closest("button");
-      btn.innerHTML = '<i class="bi bi-check-lg me-1"></i>Copied!';
-      setTimeout(()=> btn.innerHTML = '<i class="bi bi-clipboard me-1"></i><span>Copy</span>', 1200);
-    });
+    const elements = document.querySelectorAll('.fade-in');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+      });
+    }, { threshold: 0.2 });
+    elements.forEach(el => observer.observe(el));
 
-    // Clear buttons
-    function clearInput() { document.getElementById('script-input').value = ""; }
-    function clearOutput() { document.getElementById('srt-output').value = ""; }
-
-    // Mood-based music (YouTube ids)
-    const MOODS = {
-      lofi:   "jfKfPfyJRdk", // lofi girl
-      focus:  "WPni755-Krg", // deep focus/ambient
-      upbeat: "7NOSDKb0HlU"  // upbeat mix
-    };
-    const frame = document.getElementById('music-frame');
-    document.getElementById('mood')?.addEventListener('change', (e) => {
-      const id = MOODS[e.target.value] || MOODS.lofi;
-      frame.src = `https://www.youtube.com/embed/${id}?autoplay=1`;
-    });
+    // Hero background slideshow
+    const hero = document.getElementById("hero");
+    const images = [
+      "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1600&q=80",
+      "https://images.unsplash.com/photo-1505685296765-3a2736de412f?auto=format&fit=crop&w=1600&q=80",
+      "https://images.unsplash.com/photo-1485579149621-3123dd979885?auto=format&fit=crop&w=1600&q=80"
+    ];
+    let index = 0;
+    setInterval(() => {
+      index = (index + 1) % images.length;
+      hero.style.backgroundImage = `url('${images[index]}')`;
+    }, 5000); // change every 5s
   </script>
 </body>
 </html>

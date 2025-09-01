@@ -16,17 +16,10 @@ def to_timestamp(ms: int) -> str:
     return f"{hours:02}:{minutes:02}:{seconds:02},{millis:03}"
 
 def split_text(text: str, mode: str = "auto") -> list[str]:
-    """
-    Split the script into chunks:
-    - 'newlines': split on line breaks (one subtitle per line)
-    - 'sentences': split on sentences using punctuation
-    - 'auto': if there are many newlines, use them; else use sentences
-    """
+    """Split the script into chunks."""
     cleaned = re.sub(r"[ \t]+", " ", text.strip())
     if mode == "newlines" or (mode == "auto" and "\n" in cleaned and cleaned.count("\n") >= 2):
         return [p.strip() for p in cleaned.splitlines() if p.strip()]
-
-    # sentence split
     parts = re.split(r"(?<=[.!?])\s+", cleaned)
     return [p.strip() for p in parts if p.strip()]
 
@@ -34,7 +27,7 @@ def generate_srt(chunks: list[str], duration_sec: float = 2.5, gap_ms: int = 200
     """Generate SRT content from chunks and timing options."""
     srt_lines = []
     curr_ms = max(0, int(start_ms))
-    dur_ms = max(500, int(duration_sec * 1000))  # at least 0.5s
+    dur_ms = max(500, int(duration_sec * 1000))
     gap_ms = max(0, int(gap_ms))
 
     for i, text in enumerate(chunks, start=1):
